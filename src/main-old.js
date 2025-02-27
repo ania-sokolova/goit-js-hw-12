@@ -11,7 +11,6 @@ const loader = document.getElementById("loader");
 
 let currentPage = 1;
 let currentQuery = "";
-let totalHits = 0;
 
 
 async function loadImages(query, page) {
@@ -19,10 +18,9 @@ async function loadImages(query, page) {
     loader.classList.remove("hidden-loader"); 
 
     const data = await fetchImages(query, page);
-    totalHits = data.totalHits;
-
     renderImages(data.hits, page === 1); 
 
+   
     if (data.hits.length === 0) {
       iziToast.error({
         title: "Error",
@@ -30,23 +28,17 @@ async function loadImages(query, page) {
         position: "topRight",
       });
       loadMoreButton.classList.add("hidden");
-      return;
+    } else {
+      loadMoreButton.classList.remove("hidden");
     }
 
-    if (page * 40 < totalHits) {
-      loadMoreButton.classList.remove("hidden");
-      endMessage.classList.add("hidden");
-    } else {
+   
+    if (page * 40 >= data.totalHits) {
       loadMoreButton.classList.add("hidden");
       endMessage.classList.remove("hidden");
-      iziToast.info({
-        title: "Info",
-        message: "We're sorry, but you've reached the end of search results.",
-        position: "topRight",
-      });
+    } else {
+      endMessage.classList.add("hidden");
     }
-
-    smoothScroll(); 
   } catch (error) {
     iziToast.error({
       title: "Error",
@@ -55,19 +47,6 @@ async function loadImages(query, page) {
     });
   } finally {
     loader.classList.add("hidden-loader"); 
-  }
-}
-
-
-function smoothScroll() {
-  const galleryItems = document.querySelectorAll(".gallery-item");
-  if (galleryItems.length > 0) {
-    const { height } = galleryItems[0].getBoundingClientRect();
-    window.scrollBy({
-      top: height * 2,
-      behavior: "smooth",
-    });
-  }
 }
 
 
@@ -86,15 +65,18 @@ form.addEventListener("submit", (evt) => {
 
   currentQuery = query;
   currentPage = 1;
-  totalHits = 0;
   loadMoreButton.classList.add("hidden");
   endMessage.classList.add("hidden");
 
   loadImages(currentQuery, currentPage);
 });
 
+
 loadMoreButton.addEventListener("click", () => {
   currentPage += 1;
   loadImages(currentQuery, currentPage);
 });
+  
+  
+  
 
