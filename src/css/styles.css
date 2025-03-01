@@ -16,3 +16,11 @@
 @import url('./badges.css');
 @import url('./back-link.css');
 @import url('./footer.css');
+
+.hidden {
+  display: none;
+}
+
+.hidden-loader {
+  visibility: hidden;
+}

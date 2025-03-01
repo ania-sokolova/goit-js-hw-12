@@ -11,8 +11,13 @@ const loader = document.getElementById("loader");
 
 let currentPage = 1;
 let currentQuery = "";
-let totalHits = 0;
+const perPage = 40; 
+let totalHits = 0; 
 
+document.addEventListener("DOMContentLoaded", () => {
+  loadMoreButton.classList.add("hidden");
+  endMessage.classList.add("hidden");
+});
 
 async function loadImages(query, page) {
   try {
@@ -21,7 +26,11 @@ async function loadImages(query, page) {
     const data = await fetchImages(query, page);
     totalHits = data.totalHits;
 
-    renderImages(data.hits, page === 1); 
+    if (page === 1) {
+      renderImages(data.hits, true); 
+    } else {
+      renderImages(data.hits, false);
+    }
 
     if (data.hits.length === 0) {
       iziToast.error({
@@ -30,10 +39,12 @@ async function loadImages(query, page) {
         position: "topRight",
       });
       loadMoreButton.classList.add("hidden");
+      endMessage.classList.add("hidden");
       return;
     }
 
-    if (page * 40 < totalHits) {
+   
+    if (page * perPage < totalHits) {
       loadMoreButton.classList.remove("hidden");
       endMessage.classList.add("hidden");
     } else {
@@ -46,7 +57,9 @@ async function loadImages(query, page) {
       });
     }
 
-    smoothScroll(); 
+    if (page > 1) {
+      smoothScroll(); 
+    }
   } catch (error) {
     iziToast.error({
       title: "Error",
@@ -57,7 +70,6 @@ async function loadImages(query, page) {
     loader.classList.add("hidden-loader"); 
   }
 }
-
 
 function smoothScroll() {
   const galleryItems = document.querySelectorAll(".gallery-item");
@@ -93,8 +105,8 @@ form.addEventListener("submit", (evt) => {
   loadImages(currentQuery, currentPage);
 });
 
+
 loadMoreButton.addEventListener("click", () => {
   currentPage += 1;
   loadImages(currentQuery, currentPage);
 });
-
