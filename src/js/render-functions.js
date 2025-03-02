@@ -10,7 +10,7 @@ export function renderImages(images, isNewSearch) {
 
   const galleryMarkup = images
     .map(
-      ({ previewURL, largeImageURL, tags }) =>
+      ({ previewURL, largeImageURL, tags, likes, views, comments, downloads }) =>
         `<li class="gallery-item">
           <a class="gallery-link" href="${largeImageURL}">
             <img class="gallery-image"
@@ -18,6 +18,26 @@ export function renderImages(images, isNewSearch) {
                  data-source="${largeImageURL}"
                  alt="${tags}" />
           </a>
+          <div class="image-info">
+            <table>
+              <thead>
+                <tr>
+                  <th>Likes</th>
+                  <th>Views</th>
+                  <th>Comments</th>
+                  <th>Downloads</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${likes}</td>
+                  <td>${views}</td>
+                  <td>${comments}</td>
+                  <td>${downloads}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </li>`
     )
     .join("");
